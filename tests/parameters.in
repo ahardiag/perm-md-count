@@ -1,0 +1,3 @@
+#SUF            DATADIR REF               TRAJ                     FREQ    OUTDIRNAME  SUB 
+SC8_6chnd_test3 ./      ref_SC8_6chnd.gro traj_SC8_6chnd_50ns.xtc  1000    test3/sub1  1
+SC8_6chnd_test4 ./      ref_SC8_6chnd.gro traj_SC8_6chnd_50ns.xtc  1000    test3/sub4  1
