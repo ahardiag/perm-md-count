@@ -62,19 +62,19 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.xlim(TIME_OFFSET,)
 plt.ylim(0,)
-
+print('%s/permeation_cumul_%s.png'%(dirname,FLAG_SIM))
 plt.savefig('%s/permeation_cumul_%s.png'%(dirname,FLAG_SIM))
 plt.savefig('%s/permeation_cumul_%s.pdf'%(dirname,FLAG_SIM))
 
 print("Saving data in xvg format...\n")
 
-with open(dirname+"permeation_"+FLAG_SIM+".xvg","w") as fxvg:
+with open("%s/permeation_cumul_%s.xvg"%(dirname,FLAG_SIM),"w") as fxvg:
     for t,perm in zip(X['time(ns)'],X['permeations_tot']):
         #print("%6.2f% 6.2f"%(t,perm))
         fxvg.write("%6.2f% 6.2f\n"%(t,perm))
 
 print("Writing selection of water molecules that have permeated, for visualization in VMD ...\n")
 
-with open(dirname+"permeation_"+FLAG_SIM+".sel","w") as fsel:
+with open("%s/permeation_selec_%s.sel"%(dirname,FLAG_SIM),"w") as fsel:
     sel='resname SOL TIP3 and resid'+list2str(X['resid'].tolist())
     fsel.write(sel)
