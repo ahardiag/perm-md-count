@@ -27,11 +27,11 @@ def list2str(l):
     for el in l : string+=' '+str(el)
     return string
 
-dirname=os.path.dirname(sys.argv[1])+"/"
+dirname=os.path.dirname(sys.argv[1])
+if dirname == "": dirname="."
 
 assert len(sys.argv)>2, \
 "Usage : python plot_perm_tot.py file.csv flag (time_offset)\n"
-
 
 assert sys.argv[1] != ".csv" \
  "First argument must be a csv file \n"
@@ -63,8 +63,8 @@ plt.yticks(fontsize=14)
 plt.xlim(TIME_OFFSET,)
 plt.ylim(0,)
 
-plt.savefig(dirname+'permeation_'+FLAG_SIM+'_tot.png')
-plt.savefig(dirname+'permeation_'+FLAG_SIM+'_tot.pdf')
+plt.savefig('%s/permeation_cumul_%s.png'%(dirname,FLAG_SIM))
+plt.savefig('%s/permeation_cumul_%s.pdf'%(dirname,FLAG_SIM))
 
 print("Saving data in xvg format...\n")
 
