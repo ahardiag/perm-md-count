@@ -273,8 +273,9 @@ for (isub,waterox) in enumerate(list_ag):
         events_sparse=(value[1:]-diff==0)*(history[:nmoves-1]*diff<0)*diff*(np.arange(nmoves-1)+2)
         events_bool=(events_sparse != 0)
         events=events_sparse[events_bool]
-        duration_frames=abs((events_bool*history[:nmoves-1]*diff)[events_bool])
-        direction_perm=diff[events_bool]    
+        #duration_frames=abs((events_bool*history[:nmoves-1]*diff)[events_bool])
+        duration_frames=abs(history[:nmoves-1][events_bool])
+        direction_perm=diff[events_bool]
 
         if events.size:
             for i,time_frame in enumerate(events):
