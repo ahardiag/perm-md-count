@@ -105,6 +105,6 @@ Tests
 
 Citation
 -------
-If you use **perm_lip** in your research, we ask that you cite the following article:
+If you use **perm-md-count** in your research, we ask that you cite the following article:
 
 Hardiagon, A.; Murail, S.; Huang, L.-B.; van der Lee, A.; Sterpone, F.; Barboiu, M.; Baaden, M. Molecular Dynamics Simulations Reveal Statistics and Microscopic Mechanisms of Water Permeation in Membrane-Embedded Artificial Water Channel Nanoconstructs. J. Chem. Phys. 2021, 154 (18), 184102. https://doi.org/10.1063/5.0044360.
