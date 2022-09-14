@@ -1,4 +1,4 @@
-# perm_lip
+# perm-md-count
 
 Compute the Cumulative Number of Permeation of water molecules in a lipid bilayer in Molecular Dynamics simulations.
 
