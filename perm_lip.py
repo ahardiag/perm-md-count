@@ -249,8 +249,8 @@ for (isub,waterox) in enumerate(list_ag):
         history[0]=value[0]
         label_previous=value[0] # first position in memory
 
+        # Compute the history at each time : the sign gives the bulk region visited (-1 or +1) and the value gives the frame number elapsed since the last bulk visit
         for i,position in enumerate(value[:]):
-        # history array of previous position out of the membrane ; -1 if below, +1 if up
             history[i]=0 # initialize history
             if (position==1):
                 history[i]=1
@@ -263,7 +263,8 @@ for (isub,waterox) in enumerate(list_ag):
                     history[i]=label_previous-1
             label_previous=history[i]
 
-        # calculating an array with type of jump    
+        # calculating an array with type of jump
+        # Identify in a array the type of jump at each time ({-2,+2} : pbc , -1: exit in the lower compartment, 0:,same region, +1: exit in the upper compartment)    
         diff= value[1:nmoves]-value[:nmoves-1]
 
         # return an array with integer value corresponding to permeation time and sign refers to direction of permeation

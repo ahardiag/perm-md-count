@@ -46,7 +46,7 @@ All arguments must be in the same order as in the following example.
     
 Then you just have to run the executable in a directory where you want to store results:
 
-    run_perm_lip.sh parameters.in
+    run_perm_lip.sh -f parameters.in
 
 More information about the main python script can be obtained with :
 
