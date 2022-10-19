@@ -54,7 +54,8 @@ perm_lip.py -r $DATADIR/$REF \
             -x $SUF \
             -p \
             -t \
-            -s $SUB
+            -s $SUB \
+            --print_limits
 #            -v
 
 done < $inputfile

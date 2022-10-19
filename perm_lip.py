@@ -30,6 +30,8 @@ import os, sys, psutil, time, glob, re
 import math
 import argparse
 from argparse import RawTextHelpFormatter
+import pandas as pd
+
 
 def parse_args(required=False):
     parser = argparse.ArgumentParser(description="Program that computes permeation of water\n"
@@ -62,6 +64,9 @@ def parse_args(required=False):
                         type=int,
                         default=1,
                         help="Number of subgroups of water molecules.")
+    parser.add_argument("--print_limits",
+                        action="store_true",
+                        help="Print the position of the boundaries in a csv file.")
     return parser.parse_args()
     
 def get_memory():
@@ -121,7 +126,8 @@ if args.suffixname:
     suf="_"+args.suffixname
 else:
     suf=""
-OUTPUT_FILE="permeation{}.csv".format(suf)
+PERM_FILE="permeation{}.csv".format(suf)
+LIMIT_FILE="limits{}.csv".format(suf)
 LOGFILE="permeation{}.log".format(suf)        # filename for log file
 
 if not os.path.exists(PATH_TO_OUTPUT):
@@ -144,28 +150,37 @@ with open(PATH_TO_OUTPUT+LOGFILE,"w") as stdlog:
     stdlog.write("%s\n"%(os.path.abspath(ref)))
     for filename in traj: 
         stdlog.write("%s\n"%(os.path.abspath(filename)))
-    stdlog.write("%s\n"%(os.path.abspath(PATH_TO_OUTPUT+OUTPUT_FILE)))
+    stdlog.write("%s\n"%(os.path.abspath(PATH_TO_OUTPUT+PERM_FILE)))
     stdlog.write("%s\n"%(os.path.abspath(PATH_TO_OUTPUT+LOGFILE)))
 
 get_memory()
 
-# Calculate membrane boundaries using Phosphore ions
-limit_memb=u.select_atoms("name P")
-
-# Update : get the z-center of the box and check if membrane is centered
+# Define boundaries using only the closest phosphor atoms from the center
 xbox,ybox,zbox=u.coord.dimensions[:3]
-
-# select atom groups with phosphore in both leaflets
-limit_sup=limit_memb.select_atoms("prop z > %f"%(zbox/2),updating=True)
-limit_inf=limit_memb.select_atoms("prop z < %f"%(zbox/2),updating=True)
+limit_memb=u.select_atoms("name P")
+limit_sup=limit_memb.select_atoms("prop z > %f and prop z < %f"%(zbox/2,zbox/2+MAX),updating=True)
+limit_inf=limit_memb.select_atoms("prop z < %f and prop z > %f"%(zbox/2,zbox/2-MAX),updating=True)
 assert limit_inf.atoms.n_atoms!=0 , "Selections of Phosphore atoms from the bilayer is empty, check that the membrane is centered in the box."
+
+nframes = u.trajectory.n_frames-1
+z_inf_traj=np.zeros(nframes)
+z_sup_traj=np.zeros(nframes)
+limits=np.zeros((nframes,3))
+
+for iframe,ts in enumerate(u.trajectory[1:]):
+    z_inf_traj[iframe]=limit_inf.positions[:,2].mean()
+    z_sup_traj[iframe]=limit_sup.positions[:,2].mean()
+    limits[iframe] = [iframe,z_inf_traj[iframe],z_sup_traj[iframe]]
+
+if args.print_limits:
+    pd.DataFrame(limits).to_csv(PATH_TO_OUTPUT+LIMIT_FILE,sep="\t")
 
 # Select oxygen atoms in water molecules
 waterox_tot=u.select_atoms("resname TIP3 SOL TP3 and name OW OH2")
 assert waterox_tot.atoms.n_atoms!=0 ,   "Selection of all water molecule is empty"\
                                     "Check that the residue name for water is either"\
                                     "TIP3 TP3 or SOL"
-stdout=open(PATH_TO_OUTPUT+OUTPUT_FILE,"w")
+stdout=open(PATH_TO_OUTPUT+PERM_FILE,"w")
 stdout.write("water_index resid time_per_frame(ps) time(frame) time(ns) duration(frames) direction\n")
 
 ### Iterate over all subgroups of water atoms
@@ -176,17 +191,13 @@ count_rel=0
 for (isub,waterox) in enumerate(list_ag):
 
     # Data arrays for water positions wrt to phosphore limits
-    nframes = u.trajectory.n_frames-1
     nb_waters = len(waterox.atoms.resids)
-
     size_array=nb_waters*nframes/(1024**2)
     print("Will generate numpy arrays (int64) with size (%d,%d) -> %4.2f MB per array.\n"%(nb_waters,nframes,size_array))
     assert size_array < 100 , "Too many values to unpack in one single array, change the number of groups of molecule to treat by -s option!"
 
     z=np.zeros((nb_waters,nframes))
     old_z=np.zeros((nb_waters,nframes))
-    z_inf_traj=np.zeros(nframes)
-    z_sup_traj=np.zeros(nframes)
 
     PS_PER_FRAME = u.trajectory.ts.dt
     NS_PER_FRAME = PS_PER_FRAME*0.001 # Time between each step in ns 
@@ -198,8 +209,8 @@ for (isub,waterox) in enumerate(list_ag):
     for iframe,ts in enumerate(u.trajectory[1:]):
         progress(iframe, nframes, status='Reading trajectory : part %d over %d'%(isub+1,args.sub))
         # mean position of phosphores in the upper and lower leaflets
-        z_inf_traj[iframe]=limit_inf.positions[:,2].mean()
-        z_sup_traj[iframe]=limit_sup.positions[:,2].mean()
+        #z_inf_traj[iframe]=limit_inf.positions[:,2].mean()
+        #z_sup_traj[iframe]=limit_sup.positions[:,2].mean()
 
         #coordinates
         z[:,iframe]=waterox.positions[:,2]
@@ -289,14 +300,13 @@ stdout.close()
 
 # Sort rows with respect to event times and add a column with cumulative permeation
 if args.process:
-    import pandas as pd
-    df=pd.read_csv(PATH_TO_OUTPUT+OUTPUT_FILE,delimiter="\s+")
+    df=pd.read_csv(PATH_TO_OUTPUT+PERM_FILE,delimiter="\s+")
     df=df.sort_values(by=['time(ns)'],axis=0)
     df["permeations_tot"]=np.arange(df.shape[0])
-    df.to_csv(PATH_TO_OUTPUT+OUTPUT_FILE,sep="\t")
+    df.to_csv(PATH_TO_OUTPUT+PERM_FILE,sep="\t")
 
 print("\nOutput files created with success in%s :\n%s\n%s\n\n"
-" ---> %5d events of permeation during %6.3f ns!\n ---> Relative number of permeations : %5d\n"%(os.path.abspath(PATH_TO_OUTPUT),OUTPUT_FILE,LOGFILE,count,float(nframes*NS_PER_FRAME),count_rel))
+" ---> %5d events of permeation during %6.3f ns!\n ---> Relative number of permeations : %5d\n"%(os.path.abspath(PATH_TO_OUTPUT),PERM_FILE,LOGFILE,count,float(nframes*NS_PER_FRAME),count_rel))
 
 if args.time:
     print("Performance %4.2f seconds \n" % (time.time() - start_time))
