@@ -17,14 +17,14 @@ Here are the steps to install **perm_lip** in `~/programs`, but you can of cours
    git clone https://gitlab.galaxy.ibpc.fr/hardiagon/perm_lip.git
    ```
 
-2. Add main script `perm_lip.py` to your python modules. 
+2. Add the main script `perm_lip.py` to your python modules. 
 For example, if you have a directory with some executable python script like /path/to/python/modules/, you need to link the main script on this program into this directory:
     ```bash
    ln -s ~/programs/perm_lip/perm_lip.py /path/to/python/modules/ 
    ```
 3. Install the dependencies :
-This algorithm uses the python packages **MDAnalysis** and **Numpy**.
-For example, with conda, you can create a new environment with all the python packages :
+This algorithm uses the python packages **MDAnalysis**, **numpy** and **pandas**.
+The best way to use `perm-md-count` is to run the executables in a conda environment with the librairies installed and the versions used during the development :
     ```bash
     conda env create --file "~/programs/perm_lip/perm_lip.yml" -n perm_lip
     conda activate perm_lip
@@ -39,7 +39,7 @@ Tutorial
 --------
 
 To run the program, you need to provide an input file (by default `parameters.in` ) to your bash executable. In each line of this file - except comments and empty lines - are specified the parameters of the algorithm.
-All arguments must be in the same order as in the following example.
+All arguments in the same line must appear in the same order as in the following example:
 
     #SUF            DATADIR REF               TRAJ                     FREQ    OUTDIRNAME  SUB 
     SC8_6chnd_test3 ./      ref_SC8_6chnd.gro traj_SC8_6chnd_50ns.xtc  1000    test3/sub1  1
@@ -52,6 +52,10 @@ More information about the main python script can be obtained with :
 
     perm_lip.py --help
 
+
+MD trajectories
+-------
+In principle, all formats that are readable by `mdanalysis` can be used. **The membrane must be centered in the box**. If several membranes are present in your system, just center your system on the membrane of interest. In order to delimit the membrane boundaries, the program consider only the lipids (phosphor atoms) located in a layer of $2\cdot MAX=60\AA$ around the central z-plane ($z = z_{box}/2$).
 
 Parameters
 -------
