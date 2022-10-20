@@ -111,7 +111,7 @@ start_time = time.time()
 ########################################### DEFAULTS PARAMETERS ##############################################################
 MAX=30  #  threshold displacement in Angrom to take account
         #  for corrections to periodic conditions , must be close to membrane thickness
-MEMORY=False                            # put this variable to false to avoid load trajectory in RAM
+MEMORY=False                           # put this variable to false to avoid load trajectory in RAM
 ####################################################################################################################
 
 ### get arguments and debugging mode 
@@ -168,6 +168,7 @@ z_sup_traj=np.zeros(nframes)
 limits=np.zeros((nframes,3))
 
 for iframe,ts in enumerate(u.trajectory[1:]):
+    progress(iframe, nframes, status='Reading trajectory to compute boundaries.')
     z_inf_traj[iframe]=limit_inf.positions[:,2].mean()
     z_sup_traj[iframe]=limit_sup.positions[:,2].mean()
     limits[iframe] = [iframe,z_inf_traj[iframe],z_sup_traj[iframe]]
