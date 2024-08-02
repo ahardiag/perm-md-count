@@ -8,30 +8,30 @@ Quick start
 
 Installation
 ------------
-Here are the steps to install **perm_lip** in `~/programs`, but you can of course change the installation directory.
+Here are the steps to install **perm-md-count** in `~/Programs`, but you can of course change the installation directory.
 
 1. Clone this repository on your computer.
    ```bash
-   mkdir -p ~/programs
-   cd ~/programs
-   git clone https://gitlab.galaxy.ibpc.fr/hardiagon/perm_lip.git
+   mkdir -p ~/Programs
+   cd ~/Programs
+   git clone https://github.com/ahardiag/perm-md-count.git
    ```
 
 2. Add the main script `perm_lip.py` to your python modules. 
 For example, if you have a directory with some executable python script like /path/to/python/modules/, you need to link the main script on this program into this directory:
     ```bash
-   ln -s ~/programs/perm_lip/perm_lip.py /path/to/python/modules/ 
+   ln -s ~/Programs/perm_lip/perm_lip.py /path/to/python/modules/ 
    ```
 3. Install the dependencies :
 This algorithm uses the python packages **MDAnalysis**, **numpy** and **pandas**.
 The best way to use `perm-md-count` is to run the executables in a conda environment with the librairies installed and the versions used during the development :
     ```bash
-    conda env create --file "~/programs/perm_lip/perm_lip.yml" -n perm_lip
+    conda env create --file "~/Programs/perm-md-count/perm_lip.yml" -n perm_lip
     conda activate perm_lip
    ```
 4. Add the bash executable `run_perm_lip.sh` to your bash modules to run several analysis sequentially. 
     ```bash
-   ln -s ~/programs/perm_lip/run_perm_lip.sh /path/to/bash/modules/ 
+   ln -s ~/Programs/perm-md-count/run_perm_lip.sh /path/to/bash/modules/ 
    ```
 
 
