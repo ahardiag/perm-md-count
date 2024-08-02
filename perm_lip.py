@@ -1,4 +1,4 @@
-#!/home/hardiagon/anaconda3/envs/lab/bin/python
+#!/usr/bin/env python
 
 '''
 Program that computes permeation of water through a lipid membrane (with phosphorus atoms) and embedded channels.
