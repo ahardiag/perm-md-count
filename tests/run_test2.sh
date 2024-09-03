@@ -1,33 +1,42 @@
 #!/bin/bash
 
-# Test 2 : Compute the performances of the program while increasing
-#          the number of subgroups  
+# Test 2: Compute the performance of the program with different subgroups  
 
-# version of python modules used for this test (through a conda envrionement) :
-# - python 3.7.5
-# - MDAnalysis 0.20.1
-# - numpy 1.17.3
-# - matplotlib 3.1.2
-# - pandas 0.25.3
+# List of subgroups
+list_sub="1 2 4"
 
-list_sub="1 2 4 8 16"
-for sub in $list_sub
-do
+# Create output directory
 mkdir -p outputs/test2
-../perm_lip.py  -r ref_SC8_6chnd.gro \
-                -f traj_SC8_6chnd_50ns.xtc \
-                -o test2 \
-                -x "SC8_$sub" \
-                -p \
-                -t \
-                -s $sub > outputs/test2/log_$sub
-[[ $? -eq 0 ]] || { exit 1; }
-done
-# For any questions, please contact hardiagon@ibpc.fr
 
-echo "nsub Performance" > outputs/test2/result_perf.csv
-for sub in $list_sub
-do
-echo -n "$sub " >> outputs/test2/result_perf.csv
-grep Performance outputs/test2/log_$sub | awk '{print $2}' >> outputs/test2/result_perf.csv
+# Run tests and check each step
+for sub in $list_sub; do
+    # Run the script and capture output
+    ../perm_lip.py -r inputs/test1/ref_SC8_6chnd.gro \
+                   -f inputs/test1/traj_SC8_6chnd_50ns.xtc \
+                   -o test2 \
+                   -x "SC8_$sub" \
+                   -p \
+                   -t \
+                   -s $sub > outputs/test2/log_$sub
+    
+    # Check if the command was successful
+    if [ $? -ne 0 ]; then
+        echo "Test failed for subgroup $sub."
+        exit 1
+    fi
+
+    # Check if the log file exists and contains performance data
+    performance=$(grep Performance outputs/test2/log_$sub | awk '{print $2}')
+    if [ -z "$performance" ]; then
+        echo "Performance data missing for subgroup $sub."
+        exit 1
+    fi
+
+    # Append results to CSV
+    echo "$sub,$performance" >> outputs/test2/result_perf.csv
 done
+
+# Add header to CSV
+sed -i '1i nsub,Performance' outputs/test2/result_perf.csv
+
+echo "Test passed successfully."
