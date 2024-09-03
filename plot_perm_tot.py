@@ -1,5 +1,3 @@
-#!/ibpc/telesto/hardiagon/anaconda3/bin/python
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
