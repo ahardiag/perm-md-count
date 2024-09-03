@@ -26,4 +26,4 @@ for file in "${FILES[@]}"; do
     fi
 done
 
-echo "All expected files are present. Test suceed !"
+echo "All expected files are present. Test passed successfully."
