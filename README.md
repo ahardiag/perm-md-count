@@ -71,8 +71,9 @@ SUB             | The subdivision of the total number of water molecules. By def
 
 Outputs
 -------
-On can find the output files in the sub-directory ./outputs/`OUTDIRNAME` :
-- a _csv_ file :
+The following files are writtent in ./outputs/`OUTDIRNAME` :
+
+- *permeation_`SUF`.csv* : **a CSV file with permeation data**
 
 water_index  | resid |  time_per_frame(ps)  |   time(frame) |   time(ns)|   duration(frames) | direction |  permeations_tot
 |-|-|-|-|-|-|-|-|
@@ -96,10 +97,24 @@ The following information is extracted from the algorithm :
     permeations_tot      : the cumulative number of total permeations (in both 
                            direction) 
 
-- a _log_ file  : a text file with the name of the input files. Useful for post-processing.
+  *permeation_`SUF`.log* : **a LOG file**, text file with the name of the input files. Useful for post-processing.
 
-Other files created in tests:
-- a _.sel_ file : the selection of all resids of the water molecule. Useful to visualize in VMD.
+- *limits_`SUF`.csv* : another **CSV file with the lipid boundaries mean trajectory**
+
+
+Other useful commands
+-------
+
+### Plot cumulative permeations timeseries
+
+    python plot_perm_tot.py perm_<SUF>.csv <SUF> --time_offset 10.0
+
+More information about the main python script can be obtained with :
+
+    python plot_perm_tot.py --help
+
+Outputs : 
+It will generate XVG,PNG and PDF files with the number of permeations along time, and a **SEL text file** with the selection of the water molecule that have permeated. Useful to visualize in VMD.
 
 Tests
 -------
