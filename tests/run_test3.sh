@@ -3,6 +3,9 @@
 # Test 3 :  Test the bash executable and dependencies
 ../run_perm_lip.sh -f inputs/test3/parameters.in
 
+# Create output location
+mkdir -p outputs/test3
+
 # Define the base directory and all files to check
 BASE_DIR="outputs/test3"
 FILES=(

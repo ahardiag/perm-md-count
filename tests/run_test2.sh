@@ -2,6 +2,9 @@
 
 # Test 2: Compute the performance of the program with different subgroups  
 
+# Create output location
+mkdir -p outputs/test2
+
 # List of subgroups
 list_sub="1 2 4"
 

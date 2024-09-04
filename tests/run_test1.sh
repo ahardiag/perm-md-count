@@ -2,6 +2,9 @@
 
 # Test 1 : Simple test to see if the number of permeations is correct
 
+# Create output location
+mkdir -p outputs/test1
+
 # Define file paths
 LOG_FILE="outputs/test1/permeation_SC8.log"
 CSV_FILE="outputs/test1/permeation_SC8.csv"

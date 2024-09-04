@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Test 4 : Test the plotting program
+
+# Create output location
+mkdir -p outputs/test4
+
 # Define the output directory and expected files
 OUTPUT_DIR="outputs/test4"
 FILES=(
