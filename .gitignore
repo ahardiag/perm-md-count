@@ -1,2 +1,2 @@
 tests/inputs/test1/.*npz
-tests/outputs/*
+tests/outputs/test*/*
