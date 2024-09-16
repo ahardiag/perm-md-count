@@ -55,7 +55,7 @@ More information about the main python script can be obtained with :
 
 MD trajectories
 -------
-In principle, all formats that are readable by `mdanalysis` can be used. **The membrane must be centered in the box**. If several membranes are present in your system, just center your system on the membrane of interest. In order to delimit the membrane boundaries, the program consider only the lipids (phosphor atoms) located in a layer of $2\cdot MAX=60\AA$ around the central z-plane ($z = z_{box}/2$).
+In principle, all formats that are readable by `mdanalysis` can be used. **The membrane must be centered in the box**. If several membranes are present in your system, just center your system on the membrane of interest. In order to delimit the membrane boundaries, the program consider only the lipids (phosphor atoms) located in a layer of 2`MIN_DISP_MEMB`=$60\AA$ around the central z-plane ($z = z_{box}/2$).
 
 Parameters
 -------

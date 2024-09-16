@@ -32,6 +32,11 @@ import argparse
 from argparse import RawTextHelpFormatter
 import pandas as pd
 
+########################################### DEFAULTS PARAMETERS ##############################################################
+MIN_DISP_MEMB=30   #  Minimum threshold displacement in Angstrom 
+                        #  for corrections to periodic conditions , must be close to membrane thickness
+MEMORY=False            #  put this variable to false to avoid load trajectory in RAM
+##############################################################################################################################
 
 def parse_args(required=False):
     parser = argparse.ArgumentParser(description="Program that computes permeation of water\n"
@@ -108,11 +113,7 @@ def split(a, n):
 ### Main()
 start_time = time.time()
 
-########################################### DEFAULTS PARAMETERS ##############################################################
-MAX=30  #  threshold displacement in Angrom to take account
-        #  for corrections to periodic conditions , must be close to membrane thickness
-MEMORY=False                           # put this variable to false to avoid load trajectory in RAM
-####################################################################################################################
+
 
 ### get arguments and debugging mode 
 args=parse_args(required=True)
@@ -158,8 +159,8 @@ get_memory()
 # Define boundaries using only the closest phosphor atoms from the center
 xbox,ybox,zbox=u.coord.dimensions[:3]
 limit_memb=u.select_atoms("name P")
-limit_sup=limit_memb.select_atoms("prop z > %f and prop z < %f"%(zbox/2,zbox/2+MAX),updating=True)
-limit_inf=limit_memb.select_atoms("prop z < %f and prop z > %f"%(zbox/2,zbox/2-MAX),updating=True)
+limit_sup=limit_memb.select_atoms("prop z > %f and prop z < %f"%(zbox/2,zbox/2+MIN_DISP_MEMB),updating=True)
+limit_inf=limit_memb.select_atoms("prop z < %f and prop z > %f"%(zbox/2,zbox/2-MIN_DISP_MEMB),updating=True)
 assert limit_inf.atoms.n_atoms!=0 , "Selections of Phosphore atoms from the bilayer is empty, check that the membrane is centered in the box."
 
 nframes = u.trajectory.n_frames-1
@@ -224,8 +225,9 @@ for (isub,waterox) in enumerate(list_ag):
     print("Store a simplified trajectory for each water molecule ...")
 
     ### Computing the error due to PBC jumps, comparing z positions and membrane boundaries
+    # MIN_DISP_MEMB is the minimal distance above which a the z-translation of a molecule inside the membrane can be considered as a periodic boundary artifact
 
-    test_disp=abs(z-old_z)>MAX
+    test_disp=abs(z-old_z)>MIN_DISP_MEMB
 
     is_inf=np.zeros((nb_waters,nframes),dtype=bool)
     is_sup=np.zeros((nb_waters,nframes),dtype=bool)
@@ -239,13 +241,21 @@ for (isub,waterox) in enumerate(list_ag):
     is_memb_sup=np.invert(is_rel)*np.invert(is_sup)
 
     # Compute a simplified trajectory with labels in {-1,0,1}
-    # Comments to clarify : divide the box in 4 regions 
-    # -1 if water molecule is above membrane boundary or the molecule has crossed BC up to lower membrane area
-    # 0  if water molecule is inside the channel
-    # 1  if water molecule is below membrane boundary or the molecule has crossed BC up to upper membrane area
+    # Divide the box in 4 regions :
+    # - upper water bulk
+    # - upper membrane
+    # - lower membrane
+    # - lower water bulk
+    # Assign the following state to each water molecule :
+    # -1 if the molecule is below  the membrane boundary (inside the lower water bulk)
+    # 0  if the molecule is inside the membrane/channel
+    # 1  if the molecule is above  the membrane boundary (inside the upper water bulk)
+    # -1 if the molecule is inside the lower membrane and has just jumped through the BC
+    # 1  if the molecule is inside the upper membrane and has just jumped through the BC
+
     traj_simp=(is_inf[:,:nframes-1]*-1
                +is_sup[:,:nframes-1]*1
-               +is_memb[:,:nframes-1]*0
+               +is_memb[:,:nframes-1]*0 # maybe useless
                +test_disp[:,:nframes-1]*(is_memb_sup[:,:nframes-1]*1+is_memb_inf[:,:nframes-1]*-1)
                +test_disp[:,1:nframes]*(is_memb_sup[:,:nframes-1]*1+is_memb_inf[:,:nframes-1]*-1))
     nmol,nmoves=traj_simp.shape
