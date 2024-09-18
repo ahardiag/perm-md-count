@@ -250,8 +250,8 @@ for (isub,waterox) in enumerate(list_ag):
     # -1 if the molecule is below  the membrane boundary (inside the lower water bulk)
     # 0  if the molecule is inside the membrane/channel
     # 1  if the molecule is above  the membrane boundary (inside the upper water bulk)
-    # -1 if the molecule is inside the upper membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
-    # 1  if the molecule is inside the lower membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
+    # -1 if the molecule is inside the lower membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
+    # 1  if the molecule is inside the upper membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
 
     traj_simp=(is_inf[:,:nframes-1]*-1
                +is_sup[:,:nframes-1]*1
