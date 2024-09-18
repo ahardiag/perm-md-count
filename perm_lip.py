@@ -225,7 +225,7 @@ for (isub,waterox) in enumerate(list_ag):
     print("Store a simplified trajectory for each water molecule ...")
 
     ### Computing the error due to PBC jumps, comparing z positions and membrane boundaries
-    # MIN_DISP_MEMB is the minimal distance above which a the z-translation of a molecule inside the membrane can be considered as a periodic boundary artifact
+    # MIN_DISP_MEMB is the minimal distance above which a z-translation of a molecule inside the membrane can be considered as a periodic boundary artifact
 
     test_disp=abs(z-old_z)>MIN_DISP_MEMB
 
@@ -250,8 +250,8 @@ for (isub,waterox) in enumerate(list_ag):
     # -1 if the molecule is below  the membrane boundary (inside the lower water bulk)
     # 0  if the molecule is inside the membrane/channel
     # 1  if the molecule is above  the membrane boundary (inside the upper water bulk)
-    # -1 if the molecule is inside the lower membrane and has just jumped through the BC
-    # 1  if the molecule is inside the upper membrane and has just jumped through the BC
+    # -1 if the molecule is inside the upper membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
+    # 1  if the molecule is inside the lower membrane and has just jumped through the BC (criteria involving MIN_DISP_MEMB)
 
     traj_simp=(is_inf[:,:nframes-1]*-1
                +is_sup[:,:nframes-1]*1
