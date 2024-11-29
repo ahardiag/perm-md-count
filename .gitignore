@@ -3,3 +3,4 @@ tests/outputs/test*/*
 docs/*
 !docs/*tex
 !docs/images
+!docs/permeation_pseudo-algorithm.pdf
