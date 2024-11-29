@@ -1,2 +1,5 @@
 tests/inputs/test1/.*npz
 tests/outputs/test*/*
+docs/*
+!docs/*tex
+!docs/images
